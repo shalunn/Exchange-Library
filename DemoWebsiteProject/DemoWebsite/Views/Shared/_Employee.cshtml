@@ -1,0 +1,11 @@
+﻿@inject DemoWebsite.Models.FormattingService Format
+@model DemoWebsite.Models.Employee
+
+<tr>
+    <td>@Model.Name</td>
+    <td>@Model.Position</td>
+    <td>@Model.Office</td>
+    <td>@Model.Age</td>
+    <td>@Format.AsReadableDate(Model.StartDate)</td>
+    <td>@Format.AsReadableSalary(Model.Salary)</td>
+</tr>
