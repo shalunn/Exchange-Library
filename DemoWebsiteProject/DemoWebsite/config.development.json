@@ -1,8 +1,0 @@
-{
-  "ConnectionStrings": {
-    "EmployeeDataContext": "Server=.\\SQLEXPRESS;Database=DemoWebsite;Trusted_Connection=True;"
-  },  
-  "FeatureToggles": {
-    "EnableDeveloperExceptions": true
-  }  
-}

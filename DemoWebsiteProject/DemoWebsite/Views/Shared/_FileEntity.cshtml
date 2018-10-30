@@ -1,0 +1,18 @@
+﻿@inject DemoWebsite.Models.FormattingService Format
+@model DemoWebsite.Models.FileEntity
+
+<tr>
+    <td></td>
+    <td>@Model.Id</td>
+    <td>
+        <a class="file-row-a" href="@Url.Action("Download", "Files", new { id = @Model.Id })">@Model.Name</a>
+        <input style="display: none" class="file-row-input" oninput="AddFileToUpdatedList(@Model.Id, this.value, this);" value="@Model.Name"/>
+    </td>
+    <td>@Model.Type</td>
+    <td>@Model.Path</td>
+    <td>@Model.Size</td>
+    <td>@Model.Guid</td>
+    <td>@Model.Username</td>
+    <td>@Format.AsReadableDate(Model.Created)</td>
+    <td>@Format.AsReadableDate(Model.Modified)</td>
+</tr>

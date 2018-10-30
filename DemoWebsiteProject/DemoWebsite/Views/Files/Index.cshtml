@@ -1,0 +1,131 @@
+﻿@addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+@model IEnumerable<DemoWebsite.Models.FileEntity>
+@{
+    ViewData["Title"] = "File Upload";
+}
+<h3>Select action</h3>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#upload-files">Upload files</button>
+<button type="button" id="edit-names" class="btn btn-primary" onclick="SwitchFileEditor();">Edit names</button>
+<button type="button" id="save-names" style="display: none" class="btn btn-success" disabled onclick="UpdateFiles();">Save names</button>
+<button type="button" id="reset-names" style="display: none" class="btn btn-primary" disabled onclick="ResetFileNames();">Reset names</button>
+<button type="button" id="delete-selected-btn" class="btn btn-danger" disabled data-toggle="modal" data-target="#delete-selected-files">Delete selected</button>
+
+<h3>All files</h3>
+@foreach (var f in Model)
+{
+    @*<p><img src="@Url.Content(f.Path)"></p>*@
+}
+
+<div class="row top-buffer">
+    <div class="col-md-12">
+        <table id="files-table" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Path</th>
+                    <th>Size</th>
+                    <th>Guid</th>
+                    <th>CreatedBy</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model)
+                {
+                    @Html.Partial("_FileEntity", employee)
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="upload-files" tabindex="-1" role="dialog" aria-labelledby="uploadFilesLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadFilesLabel">Upload new file</h5>
+                <button type="button" class="close" onclick="$('#file-selector').val(''); $('#upload-file-info').html(''); $('#upload-file').prop('disabled', true);" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upload" asp-controller="Files" method="post" enctype="multipart/form-data">
+                    <label class="btn btn-primary" for="file-selector">
+                        <input id="file-selector" type="file" name="uploads" style="display:none"
+                               onchange="$('#upload-file-info').html(this.files[0].name); $('#upload-file').prop('disabled', false);">
+                        Browse file
+                    </label>
+                    <span class='label label-info' id="upload-file-info"></span>
+                    <br />
+                    <input id="upload-file" type="submit" disabled class="btn btn-success" style="margin-top: 10px" value="Upload">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="$('#file-selector').val(''); $('#upload-file-info').html(''); $('#upload-file').prop('disabled', true);" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="delete-selected-files" tabindex="-1" role="dialog" aria-labelledby="deleteFilesLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteFilesLabel">Delete selected files?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="delete-btn" class="btn btn-danger" style="margin-top: 10px" value="Yes">
+                <input id="not-delete-btn" class="btn btn-warning" data-dismiss="modal" style="margin-top: 10px" value="No">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#delete-btn').click(function () {
+        $.ajax({
+            url: '@Url.Action("Delete","Files")',
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(selectedFiles),
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data == true)
+                    window.location = '@Url.Action("Index","Files")'
+            }
+        });
+    });
+
+    function UpdateFiles() {
+        var filesToUpdate = [];
+
+        for (var i = 0; i < updatedFiles.length; i++) {
+            filesToUpdate.push({ Id: updatedFiles[i][0], Name: updatedFiles[i][1] });
+        }        
+
+        $.ajax({
+            url: '@Url.Action("Update","Files")',
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(filesToUpdate),
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data == true)
+                    UpdateFileNames();
+            }
+        });
+    }
+</script>
